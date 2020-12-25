@@ -20,7 +20,6 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         distanceToTarget = Vector3.Distance(target.position, transform.position);
         if (isProvoked && distanceToTarget <= chaseRange)
         {
@@ -34,6 +33,11 @@ public class EnemyAI : MonoBehaviour
         {
             isProvoked = false;
         }
+        if (navMeshAgent.pathPending && (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance) && !navMeshAgent.hasPath || navMeshAgent.velocity.sqrMagnitude == 0f)
+        {
+            GetComponent<Animator>().SetTrigger("Idle");
+        }
+
     }
 
     private void EngageTarget()
@@ -47,16 +51,18 @@ public class EnemyAI : MonoBehaviour
         {
             AttackTarget();
         }
-
     }
-
+    //  GetComponent<Animator>().SetTrigger("Idle");
     private void ChaseTarget()
     {
+        GetComponent<Animator>().SetBool("Attack", false);
+        GetComponent<Animator>().SetTrigger("Move");
         navMeshAgent.SetDestination(target.position);
     }
 
     private void AttackTarget()
     {
+        GetComponent<Animator>().SetBool("Attack", true);
         Debug.Log("Attacking target: " + target.name);
     }
 

@@ -1314,6 +1314,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1060206312584035617, guid: cff4cce7ad8b12a449e177bcca123417, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.47848165
+      objectReference: {fileID: 0}
     - target: {fileID: 5655935264586501188, guid: cff4cce7ad8b12a449e177bcca123417, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -1362,6 +1366,10 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1072943818}
+    - target: {fileID: 5655935264586501240, guid: cff4cce7ad8b12a449e177bcca123417, type: 3}
+      propertyPath: m_StoppingDistance
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5655935264586501241, guid: cff4cce7ad8b12a449e177bcca123417, type: 3}
       propertyPath: m_Name
       value: Enemy

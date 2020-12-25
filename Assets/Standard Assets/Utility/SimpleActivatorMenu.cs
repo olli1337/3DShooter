@@ -12,9 +12,7 @@ namespace UnityStandardAssets.Utility
         public Text camSwitchButton;
         public GameObject[] objects;
 
-
         private int m_CurrentActiveObject;
-
 
         private void OnEnable()
         {
