@@ -37,7 +37,6 @@ public class EnemyAI : MonoBehaviour
         {
             GetComponent<Animator>().SetTrigger("Idle");
         }
-
     }
 
     private void EngageTarget()
