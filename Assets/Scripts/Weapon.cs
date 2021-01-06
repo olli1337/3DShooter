@@ -1,3 +1,5 @@
+using System;
+using TMPro;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
@@ -6,22 +8,49 @@ public class Weapon : MonoBehaviour
     [SerializeField] Camera FPCamera;
     [SerializeField] float range = 100f;
     [SerializeField] float damage = 20;
+    [SerializeField] float magazineSize = 20;
     [SerializeField] ParticleSystem muzzleFlash;
     [SerializeField] GameObject hitEffect;
+    [SerializeField] Ammo ammoSlot;
+    [SerializeField] GameObject EmptyShell;
+    [SerializeField] Vector3 EmptyShellLocation;
+    [SerializeField] Vector3 EmptyShellRotation;
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] float shootCooldownTime;
+    [SerializeField] AmmoType ammoType;
+    [SerializeField] Enemies enemies;
+    [SerializeField] GameObject bulletRayOrigin;
+    [SerializeField] TextMeshProUGUI ammoText;
+    private bool shootCooldown;
 
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        DisplayAmmo();
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
         {
-            Shoot();
+            if (ammoSlot.GetCurrentAmmo(ammoType) > 0 && !shootCooldown)
+            {
+                Invoke("ResetShotCooldown", shootCooldownTime);
+                Shoot();
+            }
         }
+    }
+
+    private void ResetShotCooldown()
+    {
+        shootCooldown = false;
     }
 
     private void Shoot()
     {
         PlayMuzzleFlash();
         ProcessRayCast();
+        ammoSlot.ReduceCurrentAmmo(ammoType);
+        CreateShell();
+        PlayGunShotSound();
+        shootCooldown = true;
+        // Inform the enemies where the gunshot was made. This is in order to simulate the hearing of the gunshot noices.
+        enemies.DamageNotification(gameObject.transform.position);
     }
 
     private void PlayMuzzleFlash()
@@ -32,10 +61,9 @@ public class Weapon : MonoBehaviour
     private void ProcessRayCast()
     {
         RaycastHit hit;
-        if (Physics.Raycast(FPCamera.transform.position, FPCamera.transform.forward, out hit, range))
+        if (Physics.Raycast(bulletRayOrigin.transform.position, FPCamera.transform.forward, out hit, range))
         {
             CreateHitImpact(hit);
-            // Todo: Add hit effect visual for players
             EnemyHealth target = hit.transform.GetComponent<EnemyHealth>();
             if (target == null) return;
             target.TakeDamage(damage);
@@ -46,9 +74,30 @@ public class Weapon : MonoBehaviour
         }
     }
 
+    private void DisplayAmmo()
+    {
+        int currentAmmo = ammoSlot.GetCurrentAmmo(ammoType);
+        ammoText.text = currentAmmo.ToString();
+    }
+
     private void CreateHitImpact(RaycastHit hit)
     {
         GameObject impact = Instantiate(hitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+        // Inform the enemies where the gunshot hit. This is in order to simulate the hearing of the gunshot hit noices.
+        enemies.DamageNotification(hit.point);
         Destroy(impact, .1f);
     }
+
+
+    private void CreateShell()
+    {
+        GameObject shellPos = GameObject.Find("EmptyShellPosition");
+        Instantiate(EmptyShell, shellPos.transform.position, Quaternion.identity);
+    }
+
+    private void PlayGunShotSound()
+    {
+        audioSource.Play();
+    }
+
 }
